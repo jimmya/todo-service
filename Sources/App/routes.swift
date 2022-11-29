@@ -10,5 +10,7 @@ func routes(_ app: Application) throws {
         "Hello, world!"
     }
 
-    try app.register(collection: TodoController())
+    let repository = TodoRepository(application: app)
+    let service = TodoService(repository: repository)
+    try app.register(collection: TodoController(service: service))
 }
