@@ -14,8 +14,42 @@ let package = Package(
     ],
     targets: [
         .target(
+            name: "Domain",
+            dependencies: [
+                .product(name: "Vapor", package: "vapor"),
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release)),
+            ]
+        ),
+        .target(
+            name: "Data",
+            dependencies: [
+                .target(name: "Domain"),
+                .product(name: "Fluent", package: "fluent"),
+                .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
+                .product(name: "Vapor", package: "vapor"),
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
+            ]
+        ),
+        .target(
+            name: "Presentation",
+            dependencies: [
+                .target(name: "Domain"),
+                .product(name: "Vapor", package: "vapor"),
+            ],
+            swiftSettings: [
+                .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
+            ]
+        ),
+        .target(
             name: "App",
             dependencies: [
+                .target(name: "Domain"),
+                .target(name: "Data"),
+                .target(name: "Presentation"),
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "Vapor", package: "vapor")
@@ -30,6 +64,14 @@ let package = Package(
         .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
         .testTarget(name: "AppTests", dependencies: [
             .target(name: "App"),
+            .product(name: "XCTVapor", package: "vapor"),
+        ]),
+        .testTarget(name: "AppIntegrationTests", dependencies: [
+            .target(name: "App"),
+            .product(name: "XCTVapor", package: "vapor"),
+        ]),
+        .testTarget(name: "PresentationTests", dependencies: [
+            .target(name: "Presentation"),
             .product(name: "XCTVapor", package: "vapor"),
         ])
     ]

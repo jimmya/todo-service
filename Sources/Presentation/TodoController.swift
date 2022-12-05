@@ -1,15 +1,16 @@
 import Fluent
 import Vapor
+import Domain
 
-struct TodoController: RouteCollection {
+public struct TodoController: RouteCollection {
 
     private let service: TodoServiceLogic
 
-    init(service: TodoServiceLogic) {
+    public init(service: TodoServiceLogic) {
         self.service = service
     }
 
-    func boot(routes: RoutesBuilder) throws {
+    public func boot(routes: RoutesBuilder) throws {
         let todos = routes.grouped("todos")
         todos.get(use: index)
         todos.post(use: create)
@@ -22,10 +23,12 @@ struct TodoController: RouteCollection {
         try await service.fetchAll(on: req.eventLoop).map(TodoResponse.init)
     }
 
-    func create(req: Request) async throws -> TodoResponse {
+    func create(req: Request) async throws -> Response {
         let request = try req.content.decode(CreateTodoRequest.self)
         let todo = try await service.create(title: request.title, on: req.eventLoop)
-        return try TodoResponse(todo: todo)
+        let response = try await TodoResponse(todo: todo).encodeResponse(for: req)
+        response.status = .created
+        return response
     }
 
     func delete(req: Request) async throws -> HTTPStatus {
@@ -39,7 +42,7 @@ struct TodoController: RouteCollection {
 
 extension TodoServiceError: AbortError {
 
-    var status: HTTPResponseStatus {
+    public var status: HTTPResponseStatus {
         switch self {
             case .notFound: return .notFound
         }

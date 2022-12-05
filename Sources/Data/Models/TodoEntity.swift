@@ -1,5 +1,6 @@
 import Fluent
 import Vapor
+import Domain
 
 final class TodoEntity: Model, Content {
     static let schema = "todos"

@@ -1,6 +1,7 @@
 import Vapor
+import Domain
 
-struct TodoResponse: Content {
+struct TodoResponse: Content, Equatable {
 
     let id: UUID
     let title: String

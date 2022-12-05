@@ -1,6 +1,9 @@
 import Fluent
 import FluentPostgresDriver
 import Vapor
+import Data
+import Domain
+import Presentation
 
 // configures your application
 public func configure(_ app: Application) throws {
@@ -17,6 +20,26 @@ public func configure(_ app: Application) throws {
 
     app.migrations.add(CreateTodo())
 
+    app.todoController = TodoController(service: TodoService(repository: TodoRepository(application: app)))
+
     // register routes
     try routes(app)
+}
+
+struct TodoControllerKey: StorageKey {
+    typealias Value = TodoController
+}
+
+extension Application {
+    var todoController: TodoController {
+        get {
+            guard let controller = self.storage[TodoControllerKey.self] else {
+                fatalError("TodoService not set")
+            }
+            return controller
+        }
+        set {
+            self.storage[TodoControllerKey.self] = newValue
+        }
+    }
 }
