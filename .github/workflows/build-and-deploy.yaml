@@ -22,5 +22,4 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }}
-          labels:
-            - "org.opencontainers.image.source ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_ACTION_REPOSITORY }}"
+          labels: org.opencontainers.image.source="${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_ACTION_REPOSITORY }}"
