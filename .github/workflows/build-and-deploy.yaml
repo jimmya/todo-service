@@ -1,0 +1,24 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build:
+    runs-on: [ubuntu-latest]
+    steps:             
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build & push Docker image    
+        id: build
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: user-service
+          addLatest: true
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
